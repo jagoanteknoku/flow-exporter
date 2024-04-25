@@ -20,7 +20,7 @@ var (
 			Name: "flow_receive_bytes_total",
 			Help: "Bytes received.",
 		},
-		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname", "InIfacedex", "OutIfacedex"},
+		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname", "in_iface", "out_iface"},
 	)
 
 	flowTransmitBytesTotal = promauto.NewCounterVec(
@@ -28,19 +28,19 @@ var (
 			Name: "flow_transmit_bytes_total",
 			Help: "Bytes transferred.",
 		},
-		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname", "InIfacedex", "OutIfacedex"},
+		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname", "in_iface", "out_iface"},
 	)
 )
 
 type flow struct {
-	SourceAS      int    `json:"as_src"`
-	DestinationAS int    `json:"as_dst"`
-	SourceIP      string `json:"ip_dst"`
-	DestinationIP string `json:"ip_src"`
-	Bytes         int    `json:"bytes"`
-	Hostname      string `json:"label"`
-	InIfacedex      string    `json:"iface_in"`
-	OutIfacedex      string    `json:"iface_out"`
+	SourceAS	int		`json:"as_src"`
+	DestinationAS	int		`json:"as_dst"`
+	SourceIP	string		`json:"ip_dst"`
+	DestinationIP	string		`json:"ip_src"`
+	Bytes		int		`json:"bytes"`
+	Hostname	string		`json:"label"`
+	InIface		int		`json:"iface_in"`
+	OutIface	int		`json:"iface_out"`
 }
 
 // Consume ...
@@ -129,25 +129,26 @@ func logFlow(message sarama.ConsumerMessage, asns map[int]string, asn int) {
 	if f.SourceAS == asn {
 		flowTransmitBytesTotal.With(
 			prometheus.Labels{
-				"source_as":           strconv.Itoa(f.SourceAS),
-				"source_as_name":      asns[f.SourceAS],
-				"destination_as":      strconv.Itoa(f.DestinationAS),
-				"destination_as_name": asns[f.DestinationAS],
-				"hostname":            f.Hostname,
-				"iniface":            f.InIfacedex,
-				"outiface":            f.OutIfacedex,
+				"in_iface":		strconv.Itoa(f.InIface),
+				"out_iface":		strconv.Itoa(f.OutIface),
+				"source_as":		strconv.Itoa(f.SourceAS),
+				"source_as_name":	asns[f.SourceAS],
+				"destination_as":	strconv.Itoa(f.DestinationAS),
+				"destination_as_name":	asns[f.DestinationAS],
+				"hostname":		f.Hostname,
 			},
 		).Add(float64(f.Bytes))
 	} else if f.DestinationAS == asn {
 		flowReceiveBytesTotal.With(
 			prometheus.Labels{
-				"source_as":           strconv.Itoa(f.SourceAS),
-				"source_as_name":      asns[f.SourceAS],
-				"destination_as":      strconv.Itoa(f.DestinationAS),
-				"destination_as_name": asns[f.DestinationAS],
-				"hostname":            f.Hostname,
-				"iniface":            f.InIfacedex,
-				"outiface":            f.OutIfacedex,
+				"in_iface":		strconv.Itoa(f.InIface),
+				"out_iface":		strconv.Itoa(f.OutIface),
+				"source_as":		strconv.Itoa(f.SourceAS),
+				"source_as_name":	asns[f.SourceAS],
+				"destination_as":	strconv.Itoa(f.DestinationAS),
+				"destination_as_name":	asns[f.DestinationAS],
+				"hostname":		f.Hostname,
+
 			},
 		).Add(float64(f.Bytes))
 	}
