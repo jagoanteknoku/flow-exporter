@@ -20,7 +20,7 @@ var (
 			Name: "flow_receive_bytes_total",
 			Help: "Bytes received.",
 		},
-		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname"},
+		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname", "InIfacedex", "OutIfacedex"},
 	)
 
 	flowTransmitBytesTotal = promauto.NewCounterVec(
@@ -28,7 +28,7 @@ var (
 			Name: "flow_transmit_bytes_total",
 			Help: "Bytes transferred.",
 		},
-		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname"},
+		[]string{"source_as", "source_as_name", "destination_as", "destination_as_name", "hostname", "InIfacedex", "OutIfacedex"},
 	)
 )
 
@@ -39,6 +39,8 @@ type flow struct {
 	DestinationIP string `json:"ip_src"`
 	Bytes         int    `json:"bytes"`
 	Hostname      string `json:"label"`
+	InIfacedex      string    `json:"iface_in"`
+	OutIfacedex      string    `json:"iface_out"`
 }
 
 // Consume ...
@@ -132,6 +134,8 @@ func logFlow(message sarama.ConsumerMessage, asns map[int]string, asn int) {
 				"destination_as":      strconv.Itoa(f.DestinationAS),
 				"destination_as_name": asns[f.DestinationAS],
 				"hostname":            f.Hostname,
+				"iniface":            f.InIfacedex,
+				"outiface":            f.OutIfacedex,
 			},
 		).Add(float64(f.Bytes))
 	} else if f.DestinationAS == asn {
@@ -142,6 +146,8 @@ func logFlow(message sarama.ConsumerMessage, asns map[int]string, asn int) {
 				"destination_as":      strconv.Itoa(f.DestinationAS),
 				"destination_as_name": asns[f.DestinationAS],
 				"hostname":            f.Hostname,
+				"iniface":            f.InIfacedex,
+				"outiface":            f.OutIfacedex,
 			},
 		).Add(float64(f.Bytes))
 	}
