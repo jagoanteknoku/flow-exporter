@@ -1,5 +1,9 @@
 # Flow Exporter
 
+Fork from [https://github.com/neptune-networks/flow-exporter] Add export data to prometeus with Interface Index IN and Out FOR Advenced Filter Interface
+
+# Flow Exporter
+
 Flow exporter is a tool that can take flow data (Netflow, sFlow, IPFIX) from Kafka and export it to [Prometheus](https://prometheus.io). These flow records can be helpful to visualize which autonomous systems traffic is coming from and going to.
 
 Grafana is a great tool to visualize Prometheus data, and can be used to take the flow data and visualized as so:
